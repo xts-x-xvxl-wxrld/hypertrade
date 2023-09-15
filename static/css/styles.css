@@ -1,0 +1,22 @@
+select,
+input {
+  /* Increase border width */
+  border-width: 3px;
+  /* Set border color to match the bg-dark navbar */
+  border-color: #3b6543; /* Change to your desired color */
+  /* Add a subtle box shadow */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Adjust values as needed */
+}
+
+/* Style for the focus state (when the element is clicked or focused) */
+select:focus,
+input:focus {
+  /* You can change the border color for focus state */
+  border-color: #007bff; /* Change to your desired focus color */
+  /* You can also add a different box shadow for focus state */
+  box-shadow: 2px 2px 8px rgba(0, 123, 255, 0.4); /* Adjust values as needed */
+}
+
+body {
+  background-color: var(--bs-gray-600);
+}

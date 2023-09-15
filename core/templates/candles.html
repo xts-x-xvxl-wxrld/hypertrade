@@ -1,0 +1,261 @@
+{% extends 'base.html' %} {% block title %}<title>
+  JavaScript Candlestick Chart
+</title>
+<link
+  href="https://fonts.googleapis.com/css?family=Open+Sans"
+  rel="stylesheet"
+/>
+
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+  integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+  crossorigin="anonymous"
+/>
+
+<!-- Popperjs -->
+<script
+  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+  integrity="sha256-BRqBN7dYgABqtY9Hd4ynE+1slnEw+roEPFzQ7TRRfcg="
+  crossorigin="anonymous"
+></script>
+<!-- Tempus Dominus JavaScript -->
+<script
+  src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.13/dist/js/tempus-dominus.min.js"
+  crossorigin="anonymous"
+></script>
+
+<!-- Tempus Dominus Styles -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.13/dist/css/tempus-dominus.min.css"
+  crossorigin="anonymous"
+/>
+
+<!-- Plotly -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.rawgit.com/etpinard/plotlyjs-finance/master/plotlyjs-finance.js"></script>
+
+<!-- awesome 5 -->
+<script
+  src="https://kit.fontawesome.com/c61ef2a5f6.js"
+  crossorigin="anonymous"
+></script>
+{% endblock %} {% block content %}
+
+<div id="content" class="summary-content-padding">
+  <div class="container-fluid rounded-0 border-secondary bg-warning">
+    <form id="candleChartForm" action="" method="post">
+      {% csrf_token %}
+      <div class="row align-items-center justify-content-center">
+        <div class="col-md-3">
+        <!-- Column 1 Row 1-->
+          <div class="card pb-mg-0 bg-warning border-0">
+            <div class="form-group pb-mg-0 mb-mg-0">
+              <div class="card-header text-center bg-warning border border-dark">
+                <label for="currency1">Choose:</label>
+              </div>
+              
+                <select
+                  name="currency1"
+                  id="currency1"
+                  class="form-select bg-dark text-warning border-0 rounded-top-0 form-select-lg"
+                >
+                  <option value="" disabled selected>Parameter 1:</option>
+                  {% for asset in assets %}
+                  <option value="{{ asset.asset_id }}">{{ asset.asset_name }}</option>
+                  {% endfor %}
+                </select>
+              
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 pt-md-1">
+          <div class="card pb-md-0 bg-warning border-0">
+            <div class="form-group pb-md-0 mb-md-0">
+              <div class="card-header text-center bg-warning border border-dark">
+                <label for="dateTime1" class="form-label">From</label>
+            </div>
+              <!-- bg-dark text-warning border-0 rounded-top-0 -->
+                <div
+                      class="input-group input-group-lg mb-md-3"
+                      id="linkedPickers1"
+                      data-td-target-input="nearest"
+                      data-td-target-toggle="nearest"
+                    >
+                      <input
+                        id="dateTime1"
+                        type="text"
+                        class="form-control bg-dark text-warning border-0 rounded-top-0"
+                        data-td-target="#linkedPickers1"
+                        name="dateTime1"
+                        placeholder="Time is money yk..."
+                      />
+                      <span
+                        class="input-group-text border-dark rounded-top-0 bg-warning"
+                        data-td-target="#linkedPickers1"
+                        data-td-toggle="datetimepicker"
+                      >
+                        <span class="fa-solid fa-calendar"></span>
+                      </span>
+                    </div>
+              
+            </div>
+          </div>  
+        </div>
+        <div class="col-md-3">
+          <!-- Column 1 Row 1-->
+            <div class="card pb-mg-0 bg-warning border-0">
+              <div class="form-group pb-mg-0 mb-mg-0">
+                  <div class="card-header text-center bg-warning border border-dark">
+                      <label for="timeFrame">Time Frame:</label>
+                  </div>
+                  <select
+                            name="timeFrame"
+                            id="timeFrame"
+                            class="form-select bg-dark text-warning border-0 rounded-top-0 form-select-lg"
+                          >
+                          <option value="10MIN" selected>10 Minutes</option>
+                            {% for period in periods %}
+                            <option value="{{ period.period_id }}">{{ period.period_name }}</option>
+                            {% endfor %}
+                          </select>
+                <!-- bg-dark text-warning border-0 rounded-top-0 -->
+                </div>
+              </div>
+            </div>
+            </div>
+        <div class="row align-items-center justify-content-center">
+        <!-- row 2 -->
+          <div class="col-md-3">
+            <!-- Column 1 -->
+          
+            <div class="card pb-mg-0 bg-warning border-0">
+              <div class="form-group pb-mg-0 mb-mg-0">
+                <div class="card-header text-center bg-warning border border-dark">
+                  <label for="currency2">Choose:</label>
+          
+              </div>
+                <!-- bg-dark text-warning border-0 rounded-top-0 -->
+                <select
+                name="currency2"
+                id="currency2"
+                class="form-select bg-dark text-warning border-0 rounded-top-0 form-select-lg"
+              >
+                <option value="" disabled selected>Parameter 2:</option>
+                {% for asset in assets %}
+                <option value="{{ asset.asset_id }}">{{ asset.asset_name }}</option>
+                {% endfor %}
+              </select>
+              </div>
+            </div>
+        </div>
+        <div class="col-md-3 pt-md-1">
+          <div class="card pb-md-0 bg-warning border-0">
+            <div class="form-group pb-md-0 mb-md-0">
+              <div class="card-header text-center bg-warning border border-dark">
+                <label for="dateTime2" class="form-label">To</label>
+            </div>
+              <!-- bg-dark text-warning border-0 rounded-top-0 -->
+              <div
+              class="input-group input-group-lg mb-md-3"
+              id="linkedPickers2"
+              data-td-target-input="nearest"
+              data-td-target-toggle="nearest"
+            >
+              <input
+                id="dateTime2"
+                type="text"
+                class="form-control bg-dark text-warning border-0 rounded-top-0"
+                data-td-target="#linkedPickers2"
+                name="dateTime2"
+                placeholder="Time is Relative:/"
+                aria-label="Large" 
+                aria-describedby="inputGroup-sizing-sm"
+              />
+              <span
+              class="input-group-text border-dark rounded-top-0 bg-warning"
+                data-td-target="#linkedPickers2"
+                data-td-toggle="datetimepicker"
+              >
+                <span class="fa-solid fa-calendar"></span>
+              </span>
+            </div>
+              
+            </div>
+          </div>
+        </div>
+          <div class="col-md-3 text-center">
+            <div class="card bg-dark my-md-4">
+              <div class="card-body">
+                <button
+                type="submit"
+                class="btn btn-warning btn-lg stretched-link"
+                id="sumittedRequest"
+                form="candleChartForm"
+              >
+                Get Chart!
+              </button>
+              </div>
+            </div>
+              
+            </div>
+            </div>
+          </div>
+        </div>
+    </form>
+</div>
+</div>
+<div class="card border-0 rounded-0 text-center">
+  <div class="card-header rounded-0 bg-warning order-0 pt-md-0">
+      <div class="row">
+        <div class="col-md">
+          <div class="card bg-warning rounded-bottom border-dark mt-md-0">
+            <div class="card-header text-warning rounded-bottom bg-dark">
+              <h5 class="card-text">Chart For</h5>
+            </div>
+            <div class="card-body rounded-bottom ">
+              <h5 class="card-text"><span id="currency1Display"> ETH </span> -- <span id="currency2Display"> BTC </span></h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="card bg-warning rounded-bottom border-dark mt-md-0">
+            <div class="card-header text-warning rounded-bottom bg-dark">
+              <h5 class="card-text">For Date and Time</h5>
+            </div>
+            <div class="card-body rounded-bottom">
+              <h5 class="card-text"><span id="dateTime1Display"> 01/01/2022 1:00 AM </span> -- <span id="dateTime2Display"></span></h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="card bg-warning rounded-bottom border-dark mt-md-0">
+            <div class="card-header text-warning rounded-bottom bg-dark mt-md-0">
+              <h5 class="card-text">With Time Periods</h5>
+            </div>
+            <div class="card-body rounded-bottom">
+              <h5 class="card-text"><span id="timeFrameDisplay"> 10 MIN </span></h5>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="card-body bg-dark">
+    <div class="container-fluid">
+      <div id="errorBanner" style="display: none;"></div>
+    </div>
+      <div id="myDiv" style="width: 100%; height: 580px"></div>
+  </div>
+</div>
+
+<script>
+  const candleInfoUrl = "{% url 'candle-info-live' %}";
+</script>
+
+{% load static %}
+<script src="{% static 'js/candle_chart.js' %}"></script>
+<script src="{% static 'js/DateTimePicker.js' %}"></script>
+
+{% endblock %}
